@@ -33,12 +33,6 @@ namespace MindEase.Models
                 .Property(b => b.BookingStatus)
                 .HasConversion<string>();
 
-
-            builder.Entity<Booking>()
-                .HasOne(b => b.DoctorSessionSlot)
-                .WithOne(s => s.Booking)
-                .HasForeignKey<Booking>(b => b.DoctorSessionSlotId);
-
           builder.Entity<Booking>()
             .HasIndex(b => b.DoctorSessionSlotId)
               .IsUnique();
@@ -89,6 +83,18 @@ namespace MindEase.Models
                 .WithMany(d => d.UserDoctors)
                 .HasForeignKey(ud => ud.DoctorId);
 
-        }
+            //ch
+            builder.Entity<Chat>()
+               .HasOne(c => c.Booking)
+               .WithOne(b=>b.Chat)
+               .HasForeignKey<Chat>(c => c.BookingId)
+               .OnDelete(DeleteBehavior.Cascade);
+               
+            builder.Entity<ChatMessage>()
+                 .HasOne(m => m.Chat)
+                 .WithMany(c => c.Messages)
+                 .HasForeignKey(m => m.ChatId)
+                 .OnDelete(DeleteBehavior.Cascade);
+         }
     }
 }
