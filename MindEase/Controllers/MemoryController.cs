@@ -23,7 +23,7 @@ namespace MindEase.Controllers
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult<GeneralResponse<MemoryResponseDto>>> Create([FromForm] CreateMemoryDto dto)
         {
             var userId = GetUserId();
@@ -51,6 +51,13 @@ namespace MindEase.Controllers
         {
             var response = await _service.DeleteAsync(id);
             return StatusCode(response.Success ? 200 : 404, response);
+        }
+        [HttpPost("update")]
+        public async Task<ActionResult<GeneralResponse<MemoryResponseDto>>> Update([FromForm] UpdateMemoryDto dto)
+        {
+            var userId = GetUserId();
+            var response = await _service.UpdateAsync(dto, userId);
+            return StatusCode(response.Success ? 200 : 400, response);
         }
     }
 }

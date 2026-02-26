@@ -9,5 +9,6 @@ namespace MindEase.IService
         Task<GeneralResponse<MemoryResponseDto>> GetByIdAsync(int id);
         Task<GeneralResponse<bool>> DeleteAsync(int id);
         Task<GeneralResponse<List<MemoryResponseDto>>> GetByUserIdAsync(string userId);
+        Task<GeneralResponse<MemoryResponseDto>> UpdateAsync( UpdateMemoryDto dto, string userId);
     }
 }

@@ -152,5 +152,66 @@ namespace MindEase.Repo
                     };
                 }
             }
+
+        public async Task<GeneralResponse<Memory>> UpdateAsync(Memory memory, IFormFile image)
+        {
+            try
+            {
+                Memory MemoryFromDb = await _context.Memories.FindAsync(memory.Id);
+                    if (MemoryFromDb == null)
+                    {
+                        return new GeneralResponse<Memory>
+                        {
+                            Success = false,
+                            Message = "Memory not found."
+                        };
+                    }
+                    if (MemoryFromDb.UserId != memory.UserId)
+                    {
+                        return new GeneralResponse<Memory>
+                        {
+                            Success = false,
+                            Message = "Unauthorized to update this memory."
+                        };
+                }
+                    if(memory.Title != null)
+                {
+               MemoryFromDb.Title = memory.Title;
+                }
+                    if(memory.MoodState != 0)
+                {
+                    MemoryFromDb.MoodState = memory.MoodState;
+                }
+                    
+
+                if (image != null)
+                {
+                    MemoryFromDb.Image = await _imageService.UploadImageAsync(image, "memories");
+                }
+
+                await _context.SaveChangesAsync();
+
+                return new GeneralResponse<Memory>
+                {
+                    Success = true,
+                    Data = MemoryFromDb,
+                    Message = "Memory Updated successfully."
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse<Memory>
+                {
+                    Success = false,
+                    Message = "Failed to Update memory.",
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "Server", new[] { ex.Message } }
+                    }
+                };
+            }
+
+
         }
+    }
     }
