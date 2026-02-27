@@ -9,6 +9,7 @@ using MindEase.IService;
 using MindEase.Models;
 using MindEase.Repo;
 using MindEase.Service;
+using System.Security.Claims;
 using System.Text;
 
 namespace MindEase
@@ -31,15 +32,17 @@ namespace MindEase
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            builder.Services.AddIdentity<User, IdentityRole>()
-                   .AddEntityFrameworkStores<AppDbContext>()
-                   .AddDefaultTokenProviders();
+            //builder.Services.AddIdentity<User, IdentityRole>()
+            //       .AddEntityFrameworkStores<AppDbContext>()
+            //       .AddDefaultTokenProviders();
 
-            builder.Services.AddIdentityCore<Doctor>()
-                .AddRoles<IdentityRole>()
+            //builder.Services.AddIdentityCore<Doctor>()
+            //    .AddRoles<IdentityRole>()
+            //    .AddEntityFrameworkStores<AppDbContext>()
+            //    .AddDefaultTokenProviders();
+            builder.Services.AddIdentity<GeneralUser,IdentityRole>()              
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-
 
 
             builder.Services.AddAuthentication(options =>
@@ -63,6 +66,7 @@ namespace MindEase
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
         )
+
     };
 });
 
@@ -73,7 +77,9 @@ namespace MindEase
             builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddScoped<IMemoryService, MemoryService>();
             builder.Services.AddScoped<IMemoryRepository, MemoryRepository>();
-          
+            builder.Services.AddScoped<IDoctorRepo, DoctorRepo>();
+            builder.Services.AddScoped<IDoctorService, DoctorService>();
+
             #endregion
             #region Swagger Setting
             builder.Services.AddSwaggerGen(swagger =>

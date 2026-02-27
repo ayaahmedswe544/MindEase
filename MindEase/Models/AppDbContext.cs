@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MindEase.Models
 {
-    public class AppDbContext:IdentityDbContext<User>
+    public class AppDbContext:IdentityDbContext<GeneralUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -11,6 +11,8 @@ namespace MindEase.Models
         public DbSet<Memory> Memories { get; set; }
         public DbSet<MoodEntry> ModeEntries { get; set; }
         public DbSet<Journal> Journals { get; set; }
+        public DbSet<User> AppUsers { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -76,12 +78,12 @@ namespace MindEase.Models
             builder.Entity<UserDoctor>()
                 .HasOne(ud => ud.User)
                 .WithMany(u => u.UserDoctors)
-                .HasForeignKey(ud => ud.UserId);
+                .HasForeignKey(ud => ud.UserId).OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<UserDoctor>()
                 .HasOne(ud => ud.Doctor)
                 .WithMany(d => d.UserDoctors)
-                .HasForeignKey(ud => ud.DoctorId);
+                .HasForeignKey(ud => ud.DoctorId).OnDelete(DeleteBehavior.NoAction);
 
             //ch
             builder.Entity<Chat>()

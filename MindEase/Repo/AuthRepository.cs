@@ -12,19 +12,26 @@ namespace MindEase.Repo
 
         public class AuthRepository : IAuthRepository
         {
-            private readonly UserManager<User> _userManager;
-            private readonly UserManager<Doctor> _doctorManager;
-            private readonly IJwtService _jwtService;
+        //private readonly UserManager<User> _userManager;
+        //private readonly UserManager<Doctor> _doctorManager;
+        //private readonly IJwtService _jwtService;
 
-            public AuthRepository(UserManager<User> userManager,
-                                  UserManager<Doctor> doctorManager,
-                                  IJwtService jwtService)
-            {
-                _userManager = userManager;
-                _doctorManager = doctorManager;
-                _jwtService = jwtService;
-            }
-            public async Task<GeneralResponse<AuthResponse>> RegisterUserAsync(User user, string password)
+        //public AuthRepository(UserManager<User> userManager,
+        //                      UserManager<Doctor> doctorManager,
+        //                      IJwtService jwtService)
+        //{
+        //    _userManager = userManager;
+        //    _doctorManager = doctorManager;
+        //    _jwtService = jwtService;
+        //}
+        private readonly UserManager<GeneralUser> _userManager;
+        private readonly IJwtService _jwtService;
+        public AuthRepository(UserManager<GeneralUser> userManager, IJwtService jwtService)
+        {
+            _userManager = userManager;
+            _jwtService = jwtService;
+        }
+        public async Task<GeneralResponse<AuthResponse>> RegisterUserAsync(User user, string password)
             {
                 var response = new GeneralResponse<AuthResponse>();
                 try
@@ -75,7 +82,7 @@ namespace MindEase.Repo
 
             try
             {
-                var existingEmail = await _doctorManager.FindByEmailAsync(doctor.Email);
+                var existingEmail = await _userManager.Users.OfType<Doctor>().FirstOrDefaultAsync(d=>d.Email==doctor.Email);
                 if (existingEmail != null)
                 {
                     response.Success = false;
@@ -87,7 +94,7 @@ namespace MindEase.Repo
                     return response;
                 }
 
-                var existingLicense = await _doctorManager.Users
+                var existingLicense = await _userManager.Users.OfType<Doctor>()
                     .FirstOrDefaultAsync(d => d.LicenseNumber == doctor.LicenseNumber);
 
                 if (existingLicense != null)
@@ -101,7 +108,7 @@ namespace MindEase.Repo
                     return response;
                 }
 
-                var result = await _doctorManager.CreateAsync(doctor, password);
+                var result = await _userManager.CreateAsync(doctor, password);
 
                 if (!result.Succeeded)
                 {
@@ -170,8 +177,8 @@ namespace MindEase.Repo
                 var response = new GeneralResponse<AuthResponse>();
                 try
                 {
-                    var doctor = await _doctorManager.FindByNameAsync(email);
-                if (doctor == null || !await _doctorManager.CheckPasswordAsync(doctor, password))
+                    var doctor = await _userManager.FindByNameAsync(email);
+                if (doctor == null || !await _userManager.CheckPasswordAsync(doctor, password))
                     {
                         response.Success = false;
                         response.Message = "Invalid credentials";
