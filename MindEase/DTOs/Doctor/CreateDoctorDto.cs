@@ -2,7 +2,7 @@
 
 namespace MindEase.DTOs.Doctor
 {
-    public class DoctorDto
+    public class CreateDoctorDto
     {
         public string Id { get; set; }
         public string FullName { get; set; }
@@ -11,6 +11,7 @@ namespace MindEase.DTOs.Doctor
         public int Age { get; set; }
         public string Specialization { get; set; }
         public string Bio { get; set; }
-        public string ProfilePicture { get; set; }
+        
+
     }
 }

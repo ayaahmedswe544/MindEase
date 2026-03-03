@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MindEase.DTOs.Doctor;
 using MindEase.IRepo;
 using MindEase.IService;
+using MindEase.Models;
 using MindEase.Models.Response;
 using System.Security.Claims;
 
@@ -34,6 +35,13 @@ namespace MindEase.Controllers
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
 
 
+        }
+        [HttpPost]
+        public async Task<ActionResult<GeneralResponse<DoctorDto>>> UpdateProfile([FromForm] updateDoctorDto doctorDto)
+        {
+            string DoctorId = GetDoctorId();
+            var response = await _service.UpdateProfileAsync(doctorDto, DoctorId);
+            return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
     }
 }

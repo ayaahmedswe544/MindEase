@@ -13,7 +13,7 @@ namespace MindEase.Repo
         private readonly IImageService _imageService;
         private readonly UserManager<GeneralUser> _userManager;
 
-        public DoctorRepo(AppDbContext context, IImageService imageService, UserManager<GeneralUser > userManager)
+        public DoctorRepo(AppDbContext context, IImageService imageService, UserManager<GeneralUser> userManager)
         {
             _context = context;
             _imageService = imageService;
@@ -35,7 +35,7 @@ namespace MindEase.Repo
                         Message = "Doctor not found"
                     };
                 }
-                else { 
+                else {
                     return new GeneralResponse<Doctor>
                     {
                         Success = true,
@@ -43,7 +43,7 @@ namespace MindEase.Repo
                     };
                 }
             }
-            
+
             catch (Exception ex)
             {
 
@@ -58,4 +58,95 @@ namespace MindEase.Repo
                 };
             }
         }
-    } }
+
+        public async Task<GeneralResponse<Doctor>> UpdateProfileAsync(Doctor doctor, IFormFile profilePicture)
+        {
+            try
+            {
+                var existingDoctor = _context.Users.OfType<Doctor>().FirstOrDefault(d => d.Id == doctor.Id);
+                if (existingDoctor == null)
+                {
+                    return new GeneralResponse<Doctor>
+                    {
+                        Success = false,
+                        Message = "Doctor not found"
+                    };
+                }
+                bool ExistEmail = _context.Users.Any(u => u.Email == doctor.Email && u.Id != doctor.Id);
+                if (ExistEmail)
+                {
+                    return new GeneralResponse<Doctor>
+                    {
+                        Success = false,
+                        Message = "Email already exists.",
+                        Errors = new Dictionary<string, string[]>
+                            {
+                                { "Email", new[] { "Email is already in use" } }
+                            }
+                    };
+                }
+                else
+                {
+                    existingDoctor.Email = doctor.Email;
+                }
+                if (profilePicture == null)
+                {
+
+                    return new GeneralResponse<Doctor>
+                    {
+                        Success = false,
+                        Message = "Failed to upload profile picture.",
+                        Errors = new Dictionary<string, string[]>
+                            {
+                                { "ImageUpload", new[] { "Error uploading image" } }
+                            }
+                    };
+
+
+                }
+                else {
+                    var imageUploadResult = await _imageService.UploadImageAsync(profilePicture, "profile-pictures");
+                    existingDoctor.Image = imageUploadResult;
+                }
+
+                if (!string.IsNullOrEmpty(doctor.FullName))
+                {
+                    existingDoctor.FullName = doctor.FullName;
+                }
+                if (!string.IsNullOrEmpty(doctor.Specialization))
+                {
+                    existingDoctor.Specialization = doctor.Specialization;
+                }
+                if (!string.IsNullOrEmpty(doctor.Bio))
+                {
+                    existingDoctor.Bio = doctor.Bio;
+                }
+
+                await _context.SaveChangesAsync();
+                return new GeneralResponse<Doctor>
+                {
+                    Success = true,
+                    Data = existingDoctor
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse<Doctor>
+                {
+                    Success = false,
+                    Message = "Failed to update Profile of Doctor.",
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "Server", new[] { ex.Message } }
+                    }
+                };
+
+            }
+
+
+        }
+
+
+    }
+}
