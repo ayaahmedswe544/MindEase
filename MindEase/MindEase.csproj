@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\JournalingController.cs" />
+    <Compile Remove="DTOs\Journaling\CreateJournalingDto.cs" />
+    <Compile Remove="DTOs\Journaling\JournalingDto.cs" />
+    <Compile Remove="IRepo\IJournalRepo.cs" />
+    <Compile Remove="IService\IJournalService.cs" />
+    <Compile Remove="Repo\JournalRepo.cs" />
+    <Compile Remove="Service\JournalService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.12" />
@@ -21,6 +31,16 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Controllers\JournalingController.cs" />
+    <None Include="DTOs\Journaling\CreateJournalingDto.cs" />
+    <None Include="DTOs\Journaling\JournalingDto.cs" />
+    <None Include="IRepo\IJournalRepo.cs" />
+    <None Include="IService\IJournalService.cs" />
+    <None Include="Repo\JournalRepo.cs" />
+    <None Include="Service\JournalService.cs" />
   </ItemGroup>
 
 </Project>
