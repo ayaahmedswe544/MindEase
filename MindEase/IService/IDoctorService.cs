@@ -8,5 +8,6 @@ namespace MindEase.IService
     {
         Task<GeneralResponse<DoctorDto>> ProfileAsync(string DoctorId);
         Task<GeneralResponse<DoctorDto>> UpdateProfileAsync(updateDoctorDto doctor, string ID);
+        Task<GeneralResponse<List<DoctorUsers>>> GetDoctorUsersAsync(string ID);
     }
 }

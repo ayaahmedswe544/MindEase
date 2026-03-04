@@ -147,6 +147,32 @@ namespace MindEase.Repo
 
         }
 
+        public async Task<GeneralResponse<List<User>>> GetDoctorUsersAsync(string ID)
+        {
+            if (!_context.Users.OfType<Doctor>().Any(d => d.Id == ID))
+            {
+                return new GeneralResponse<List<User>>
+                {
+                    Success = false,
+                    Message = "Doctor not found"
+                };
+            }
 
+            var patients = _context.UserDoctors.Where(d=>d.DoctorId==ID).Select(d=>d.User).ToList();
+            if(patients==null || patients.Count == 0)
+            {
+                return new GeneralResponse<List<User>>
+                {
+                    Success = false,
+                    Message = "No patients found for this doctor"
+                };
+            }
+
+            return new GeneralResponse<List<User>>
+            {
+                Success = true,
+                Data = patients
+            };
+        }
     }
 }

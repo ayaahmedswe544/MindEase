@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindEase.Models;
 
@@ -11,9 +12,11 @@ using MindEase.Models;
 namespace MindEase.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260303181603_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,7 +196,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Booking");
                 });
 
             modelBuilder.Entity("MindEase.Models.Chat", b =>
@@ -215,7 +218,7 @@ namespace MindEase.Migrations
                     b.HasIndex("BookingId")
                         .IsUnique();
 
-                    b.ToTable("Chats");
+                    b.ToTable("Chat");
                 });
 
             modelBuilder.Entity("MindEase.Models.ChatMessage", b =>
@@ -250,7 +253,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("ChatMessages");
+                    b.ToTable("ChatMessage");
                 });
 
             modelBuilder.Entity("MindEase.Models.DoctorSessionSlot", b =>
@@ -280,7 +283,7 @@ namespace MindEase.Migrations
                     b.HasIndex("DoctorId", "StartDateTime")
                         .IsUnique();
 
-                    b.ToTable("DoctorSessionSlots");
+                    b.ToTable("DoctorSessionSlot");
                 });
 
             modelBuilder.Entity("MindEase.Models.DoctorWeeklySchedule", b =>
@@ -311,7 +314,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("DoctorWeeklySchedules");
+                    b.ToTable("DoctorWeeklySchedule");
                 });
 
             modelBuilder.Entity("MindEase.Models.GeneralUser", b =>
@@ -490,7 +493,7 @@ namespace MindEase.Migrations
                     b.HasIndex("UserId", "Date")
                         .IsUnique();
 
-                    b.ToTable("MoodEntry");
+                    b.ToTable("ModeEntries");
                 });
 
             modelBuilder.Entity("MindEase.Models.UserDoctor", b =>
@@ -508,7 +511,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("UserDoctors");
+                    b.ToTable("UserDoctor");
                 });
 
             modelBuilder.Entity("MindEase.Models.Doctor", b =>

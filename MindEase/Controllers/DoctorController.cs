@@ -43,6 +43,13 @@ namespace MindEase.Controllers
             var response = await _service.UpdateProfileAsync(doctorDto, DoctorId);
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
+        [HttpGet("patients")]
+        public async Task<ActionResult<GeneralResponse<List<DoctorUsers>>>> GetDoctorUsers()
+        {
+            string DoctorId = GetDoctorId();
+            var response = await _service.GetDoctorUsersAsync(DoctorId);
+            return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
+        }
     }
 }
 

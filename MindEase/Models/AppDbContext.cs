@@ -13,6 +13,13 @@ namespace MindEase.Models
         public DbSet<Journal> Journals { get; set; }
         public DbSet<User> AppUsers { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<DoctorSessionSlot> DoctorSessionSlots { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<UserDoctor> UserDoctors { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<DoctorWeeklySchedule> DoctorWeeklySchedules { get; set; }
+        public DbSet<MoodEntry> MoodEntries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
