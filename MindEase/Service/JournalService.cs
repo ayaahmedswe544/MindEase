@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure;
+using Microsoft.AspNetCore.Identity;
+using MindEase.DTOs.Journaling;
+using MindEase.DTOs.Memory;
 using MindEase.IRepo;
 using MindEase.IService;
 using MindEase.Models;
 using MindEase.Models.Response;
+using System;
+using System.Security.Claims;
 
 namespace MindEase.Service
 {
@@ -15,29 +20,139 @@ namespace MindEase.Service
         {
             _journalRepo = journalRepo;
             _userManager = userManager;
-
         }
 
-        public async Task<Journal> CreateJournalAsync(string title, string content, string userId)
+        public async Task<GeneralResponse<JournalingDto>> CreateJournalAsync(CreateJournalingDto input , string userId)
         {
             var journal = new Journal
             {
-                Title = title,
-                Content = content,
+                Title = input.Title,
+                Content = input.Content,
                 UserId = userId
             };
+            var response = await _journalRepo.CreateAsync(journal);
 
-            return await _journalRepo.AddJournalAsync(journal);
+            if (!response.Success)
+                return new GeneralResponse<JournalingDto>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Errors = response.Errors
+                };
+
+            var dtoResponse = new JournalingDto
+            {
+                Id = response.Data!.Id,
+                Title = response.Data.Title,
+                Date = response.Data.Date,
+                Content = response.Data.Content,
+                UserId = response.Data!.UserId
+
+            };
+
+            return new GeneralResponse<JournalingDto>
+            {
+                Success = true,
+                Data = dtoResponse,
+                Message = response.Message
+            };
         }
 
-        public async Task<Journal> GetJournalByIdAsync(int id)
+
+
+        public async Task<GeneralResponse<JournalingDto>> UpdateAsync(UpdateJournalingDto input, string userId)
         {
-            return await _journalRepo.GetJournalByIdAsync(id);
+
+            var journal = new Journal
+            {
+                Id = input.Id,
+                UserId = userId,
+                Title = input.Title,
+                Content = input.Content
+            };
+
+
+            var response = await _journalRepo.UpdateJournalAsync(journal);
+
+            if (!response.Success)
+                return new GeneralResponse<JournalingDto>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Errors = response.Errors
+                };
+
+            var dtoResponse = new JournalingDto
+            {
+                Id = response.Data!.Id,
+                Title = response.Data.Title,
+                Content = response.Data.Content,
+                Date = response.Data.Date,
+                UserId = response.Data!.UserId
+            };
+
+            return new GeneralResponse<JournalingDto>
+            {
+                Success = true,
+                Data = dtoResponse,
+                Message = response.Message
+            };
         }
 
-        public async Task<IEnumerable<Journal>> GetAllJournalsAsync(string userId)
+        public async Task<GeneralResponse<JournalingDto>> GetJournalByIdAsync(int id)
         {
-            return await _journalRepo.GetAllJournalsAsync(userId);
+            var response = await _journalRepo.GetJournalByIdAsync(id);
+
+            if (!response.Success)
+                return new GeneralResponse<JournalingDto>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Errors = response.Errors
+                };
+
+            var dtoResponse = new JournalingDto
+            {
+                Id = response.Data!.Id,
+                Title = response.Data.Title,
+                Date = response.Data.Date,
+                Content = response.Data.Content,
+                UserId = response.Data!.UserId
+            };
+
+            return new GeneralResponse<JournalingDto>
+            {
+                Success = true,
+                Data = dtoResponse
+            };
+        }
+
+        public async Task<GeneralResponse<List<JournalingDto>>> GetAllJournalsAsync(string userId)
+        {
+            var journalResponse = await _journalRepo.GetAllJournalsAsync(userId);
+
+
+            if (!journalResponse.Success)
+                return new GeneralResponse<List<JournalingDto>>
+                {
+                    Success = false,
+                    Message = journalResponse.Message,
+                    Errors = journalResponse.Errors
+                };
+
+            var dtoList = journalResponse.Data!.Select(m => new JournalingDto
+            {
+                Id = m.Id,
+                Title = m.Title,
+                Date = m.Date,
+            }).ToList();
+
+            return new GeneralResponse<List<JournalingDto>>
+            {
+                Success = true,
+                Data = dtoList,
+                Message = journalResponse.Message
+            };
         }
 
 

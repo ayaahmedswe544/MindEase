@@ -3,12 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MindEase.DTOs.Journaling
 {
-    public class CreateJournalingDto
+    public class UpdateJournalingDto
     {
         [Required]
+        public int Id { get; set; }
         public string Title { get; set; }
-        [Required]
         public string Content { get; set; }
-        public DateTime Date { get; set; } = DateTime.Now;
     }
 }

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindEase", "MindEase.csproj", "{4FD95596-0B3F-7181-511E-6F4313D25BB4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4FD95596-0B3F-7181-511E-6F4313D25BB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FD95596-0B3F-7181-511E-6F4313D25BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FD95596-0B3F-7181-511E-6F4313D25BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FD95596-0B3F-7181-511E-6F4313D25BB4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {53308F44-86EC-4D86-82C4-7FB21704B944}
+	EndGlobalSection
+EndGlobal

@@ -5,9 +5,10 @@ namespace MindEase.IRepo
 {
     public interface IJournalRepo
     {
-        Task<Journal> AddJournalAsync(Journal journal);
-        Task<Journal> GetJournalByIdAsync(int id);
-        Task<IEnumerable<Journal>> GetAllJournalsAsync(string userId);
+        Task<GeneralResponse<Journal>> CreateAsync(Journal journal);
+        Task<GeneralResponse<Journal>> UpdateJournalAsync(Journal journal);
+        Task<GeneralResponse<Journal>> GetJournalByIdAsync(int id);
+        Task<GeneralResponse<List<Journal>>> GetAllJournalsAsync(string userId);
         Task<GeneralResponse<bool>> DeleteAsync(int id);
 
     }

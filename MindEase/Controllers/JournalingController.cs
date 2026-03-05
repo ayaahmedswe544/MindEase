@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MindEase.DTOs.Journaling;
+using MindEase.DTOs.Memory;
 using MindEase.IService;
 using MindEase.Models;
 using MindEase.Models.Response;
+using System.Security.Claims;
 
 namespace MindEase.Controllers
 {
@@ -17,34 +21,39 @@ namespace MindEase.Controllers
         {
             _journalService = journalService;
         }
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        // POST: api/journal
         [HttpPost]
-        public async Task<IActionResult> CreateJournal([FromBody] JournalRequest request)
+        public async Task<ActionResult<GeneralResponse<JournalingDto>>> CreateJournal([FromForm] CreateJournalingDto request)
         {
-            var journal = await _journalService.CreateJournalAsync(request.Title, request.Content, request.UserId);
-            return Ok(journal);
+            var userId = GetUserId();
+            var journalResponse = await _journalService.CreateJournalAsync(request, userId);
+            return StatusCode(journalResponse.Success ? 200 : 400, journalResponse);
+
         }
 
-        // GET: api/journal/{id}
+        [HttpPost("update")]
+        public async Task<ActionResult<GeneralResponse<JournalingDto>>> UpdateJournal([FromForm] UpdateJournalingDto dto)
+        {
+            var userId = GetUserId();
+            var response = await _journalService.UpdateAsync(dto, userId);
+            return StatusCode(response.Success ? 200 : 400, response);
+        }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetJournalById(int id)
+        public async Task<ActionResult<GeneralResponse<JournalingDto>>> GetJournalById(int id)
         {
             var journal = await _journalService.GetJournalByIdAsync(id);
-            if (journal == null)
-            {
-                return NotFound();
-            }
-            return Ok(journal);
+            return StatusCode(journal.Success ? 200 : 404, journal);
+
         }
 
-        // GET: api/journal
-        [HttpGet("{userId}")]
-
-        public async Task<IActionResult> GetAllJournals(string userId)
+        [HttpGet("user")] 
+        public async Task<ActionResult<GeneralResponse<List<JournalingDto>>>> GetAllUserJournals()
         {
+            var userId = GetUserId();
             var journals = await _journalService.GetAllJournalsAsync(userId);
-            return Ok(journals);
+            return StatusCode(journals.Success ? 200 : 404, journals);
         }
 
         [HttpDelete("{id}")]
@@ -55,11 +64,5 @@ namespace MindEase.Controllers
         }
 
     }
-
-    public class JournalRequest
-    {
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public string UserId { get; set; }
-    }
+ 
 }
