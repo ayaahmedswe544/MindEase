@@ -193,7 +193,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.Chat", b =>
@@ -215,7 +215,7 @@ namespace MindEase.Migrations
                     b.HasIndex("BookingId")
                         .IsUnique();
 
-                    b.ToTable("Chats");
+                    b.ToTable("Chats", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.ChatMessage", b =>
@@ -250,7 +250,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("ChatMessages");
+                    b.ToTable("ChatMessages", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.DoctorSessionSlot", b =>
@@ -280,7 +280,7 @@ namespace MindEase.Migrations
                     b.HasIndex("DoctorId", "StartDateTime")
                         .IsUnique();
 
-                    b.ToTable("DoctorSessionSlots");
+                    b.ToTable("DoctorSessionSlots", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.DoctorWeeklySchedule", b =>
@@ -311,7 +311,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("DoctorWeeklySchedules");
+                    b.ToTable("DoctorWeeklySchedules", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.GeneralUser", b =>
@@ -430,7 +430,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Journals");
+                    b.ToTable("Journals", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.Memory", b =>
@@ -463,7 +463,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Memories");
+                    b.ToTable("Memories", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.MoodEntry", b =>
@@ -490,7 +490,7 @@ namespace MindEase.Migrations
                     b.HasIndex("UserId", "Date")
                         .IsUnique();
 
-                    b.ToTable("MoodEntry");
+                    b.ToTable("MoodEntry", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.UserDoctor", b =>
@@ -508,7 +508,7 @@ namespace MindEase.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("UserDoctors");
+                    b.ToTable("UserDoctors", (string)null);
                 });
 
             modelBuilder.Entity("MindEase.Models.Doctor", b =>
