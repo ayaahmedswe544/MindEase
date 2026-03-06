@@ -19,8 +19,8 @@ namespace MindEase.Models
         public Doctor Doctor { get; set; }
         public Chat Chat { get; set; }
         public BookingStatus BookingStatus { get; set; }
-
         public DateTime RequestedAt { get; set; }
         public DateTime? ConfirmedAt { get; set; }
+
     }
 }

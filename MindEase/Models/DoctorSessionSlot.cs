@@ -15,5 +15,6 @@ namespace MindEase.Models
 
         public SlotStatus SlotStatus { get; set; }
         public Booking Booking { get; set; }
+
     }
 }
