@@ -22,7 +22,6 @@ namespace MindEase.Controllers
 
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-
         [HttpPost("create")]
         public async Task<ActionResult<GeneralResponse<MemoryResponseDto>>> Create([FromForm] CreateMemoryDto dto)
         {

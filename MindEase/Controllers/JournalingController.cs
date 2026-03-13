@@ -45,7 +45,6 @@ namespace MindEase.Controllers
         {
             var journal = await _journalService.GetJournalByIdAsync(id);
             return StatusCode(journal.Success ? 200 : 404, journal);
-
         }
 
         [HttpGet("user")] 

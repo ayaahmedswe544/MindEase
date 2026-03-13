@@ -1,18 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations;
+﻿using MindEase.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MindEase.Models
+namespace MindEase.DTOs.ChatMessage
 {
-    public class ChatMessage
+    public class ChatMessageDto
     {
         public int Id { get; set; }
 
-        [ForeignKey("Chat")]
         public int ChatId { get; set; }
-        public Chat Chat { get; set; }
-
-        public string SenderId { get; set;}
         public MessageSenderType MessageSenderType { get; set; }
         public string Content { get; set; }
 

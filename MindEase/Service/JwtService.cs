@@ -15,7 +15,7 @@
             _configuration = configuration;
         }
 
-        public string GenerateToken(string id, string email, string role)
+        public string GenerateToken(string id, string email, string role, string name,int senderType)
         {
             var jwt = _configuration.GetSection("Jwt");
 
@@ -24,6 +24,8 @@
             new Claim(ClaimTypes.NameIdentifier, id),
             new Claim(ClaimTypes.Email, email),
             new Claim(ClaimTypes.Role, role),
+            new Claim(ClaimTypes.Name, name),
+            new Claim("SenderType", senderType.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

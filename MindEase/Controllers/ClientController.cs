@@ -32,7 +32,6 @@ namespace MindEase.Controllers
             var response = await _clientService.GetProfileAsync(ClientId);
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
 
-
         }
         [HttpPost]
         public async Task<ActionResult<GeneralResponse<ClientDto>>> UpdateClientProfile([FromForm] updateClientDto clientDto)

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+</head>
+<body>
+    <h1>user Chat</h1>
+
+    <input id="bookingId" placeholder="Booking Id" />
+    <button onclick="join()">Join Chat</button>
+
+    <br /><br />
+
+    <input id="message" placeholder="Message" />
+    <button onclick="send()">Send</button>
+
+    <ul id="messages" style="list-style:none; padding:0;"></ul>
+
+    <script>
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImRjMjlkZmFlLTNhOWEtNDNiMy05MDk1LWNmZDk3YTkxNzkwNCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Im1hcmlhbUBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoibWFyaWFtIiwiU2VuZGVyVHlwZSI6IjAiLCJqdGkiOiJlYTQ1MDljMy00MjNkLTQ3ZTYtOTBjYS0yZDJkNzRiZmM0NGUiLCJleHAiOjE3NzMzODM2OTgsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjcyMDAvIiwiYXVkIjoiTWluZEVhc2VDbGllbnQifQ.nAkZtAq3JIlkHu2nRbazYU41dzSK0Y5VGlCqSN2-sec"; // replace with your JWT
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:7200/hubs/chat", {
+                accessTokenFactory: () => token
+            })
+            .build();
+
+        function renderMessage(msg) {
+            const li = document.createElement("li");
+            const sentAt = msg.sentAt || msg.SentAt;      
+            const senderType = msg.messageSenderType ?? msg.MessageSenderType;
+
+            const time = sentAt ? new Date(sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Unknown Time";
+            const senderMap = { 0: "User", 1: "Doctor" };
+            const sender = senderMap[senderType] || "Unknown";
+
+            li.textContent = `[${time}] ${sender} : ${msg.content || msg.Content || ""}`;
+
+            li.style.color = senderType === 0 ? "blue" : "green";
+            if (senderType === 0) li.style.fontWeight = "bold";
+
+            document.getElementById("messages").appendChild(li);
+            li.scrollIntoView({ behavior: "smooth" });
+        }
+
+        connection.on("ReceiveMessage", (msg) => {
+            renderMessage(msg);
+        });
+        connection.on("LoadMessages", (messages) => {
+            const ul = document.getElementById("messages");
+            ul.innerHTML = ""; 
+            messages.forEach(msg => renderMessage(msg));
+        });
+        connection.start()
+            .then(() => console.log("✅ Connected"))
+            .catch(err => console.error("❌ Connection error:", err));
+
+        function join() {
+            const bookingId = parseInt(document.getElementById("bookingId").value);
+            if (!bookingId) return alert("Enter a valid booking ID.");
+
+            connection.invoke("JoinChat", bookingId)
+                .then(() => {
+                    console.log("Joined chat group for booking", bookingId);
+                    connection.invoke("LoadMessages", bookingId); 
+                })
+                .catch(err => console.error("❌ JoinChat error:", err));
+        }
+
+        function send() {
+            const bookingId = parseInt(document.getElementById("bookingId").value);
+            const message = document.getElementById("message").value;
+            if (!message || !bookingId) return;
+
+            connection.invoke("SendMessage", bookingId, message)
+                .catch(err => console.error("❌ SendMessage error:", err));
+
+            document.getElementById("message").value = ""; 
+        }
+    </script>
+</body>
+</html>

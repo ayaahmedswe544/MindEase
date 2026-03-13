@@ -12,5 +12,6 @@ namespace MindEase.IService
             Task<GeneralResponse<List<MoodEntryDto>>> GetAllAsync(string userId);
             Task<GeneralResponse<bool>> DeleteAsync(int id,string userId);
 
+
     }
 }

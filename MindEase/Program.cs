@@ -1,9 +1,11 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MindEase.Hubs;
 using MindEase.IRepo;
 using MindEase.IService;
 using MindEase.Models;
@@ -66,7 +68,30 @@ namespace MindEase
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
         )
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
 
+            if (!string.IsNullOrEmpty(accessToken) &&
+                path.StartsWithSegments("/hubs/chat"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine("AUTH FAILED: " + context.Exception.Message);
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -85,7 +110,20 @@ namespace MindEase
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IMoodEntryRepo, MoodEntryRepo>();
             builder.Services.AddScoped<IMoodEntryService, MoodEntryService>();
-             
+            builder.Services.AddScoped<IChatRepository, ChatRepository>();
+            builder.Services.AddScoped<IChatService, ChatService>();
+            builder.Services.AddSignalR();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7200", "https://example.com") 
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials(); 
+                });
+            });
+
 
             #endregion
             #region Swagger Setting
@@ -140,11 +178,14 @@ namespace MindEase
                 Console.WriteLine($"Incoming: {context.Request.Method} {context.Request.Path}");
                 await next();
             });
+
+            app.UseCors("CorsPolicy");
+            app.UseStaticFiles();
+            app.UseWebSockets();
             app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
+            app.MapHub<ChatHub>("/hubs/chat");
 
             app.Run();
         }

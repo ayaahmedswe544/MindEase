@@ -12,18 +12,7 @@ namespace MindEase.Repo
 
         public class AuthRepository : IAuthRepository
         {
-        //private readonly UserManager<User> _userManager;
-        //private readonly UserManager<Doctor> _doctorManager;
-        //private readonly IJwtService _jwtService;
 
-        //public AuthRepository(UserManager<User> userManager,
-        //                      UserManager<Doctor> doctorManager,
-        //                      IJwtService jwtService)
-        //{
-        //    _userManager = userManager;
-        //    _doctorManager = doctorManager;
-        //    _jwtService = jwtService;
-        //}
         private readonly UserManager<GeneralUser> _userManager;
         private readonly IJwtService _jwtService;
         public AuthRepository(UserManager<GeneralUser> userManager, IJwtService jwtService)
@@ -60,7 +49,7 @@ namespace MindEase.Repo
                     }
 
                     response.Success = true;
-                   var token =  _jwtService.GenerateToken(user.Id.ToString(), user.Email, "User");
+                   var token =  _jwtService.GenerateToken(user.Id.ToString(), user.Email, "User", user.FullName,0);
                     response.Data = new AuthResponse { Token = token };
                     response.Message = "User registered successfully";
                 }
@@ -120,7 +109,7 @@ namespace MindEase.Repo
                     return response;
                 }
 
-                var token = _jwtService.GenerateToken(doctor.Id.ToString(), doctor.Email, "Doctor");
+                var token = _jwtService.GenerateToken(doctor.Id.ToString(), doctor.Email, "Doctor", doctor.FullName,1);
 
                 response.Success = true;
                 response.Data = new AuthResponse { Token = token };
@@ -157,7 +146,7 @@ namespace MindEase.Repo
                     return response;
                     }
 
-                    var token = _jwtService.GenerateToken(user.Id.ToString(), user.Email, "User");
+                    var token = _jwtService.GenerateToken(user.Id.ToString(), user.Email, "User", user.FullName,0);
                     response.Data = new AuthResponse { Token = token };
                     response.Message = "Login successful";
                 }
@@ -189,7 +178,7 @@ namespace MindEase.Repo
                     return response;
                     }
 
-                    var token = _jwtService.GenerateToken(doctor.Id.ToString(), doctor.Email, "Doctor");
+                    var token = _jwtService.GenerateToken(doctor.Id.ToString(), doctor.Email, "Doctor", doctor.FullName,1);
                     response.Data = new AuthResponse { Token = token };
                     response.Message = "Login successful";
                 }
