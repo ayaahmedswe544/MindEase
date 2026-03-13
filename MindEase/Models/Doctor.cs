@@ -1,7 +1,7 @@
-﻿ using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 namespace MindEase.Models
-   {
-        public class Doctor:GeneralUser
+{
+    public class Doctor : GeneralUser
 
     {
 
@@ -13,5 +13,5 @@ namespace MindEase.Models
         public List<DoctorWeeklySchedule> WeeklySchedules { get; set; }
         public List<DoctorSessionSlot> SessionSlots { get; set; }
         public List<Booking> Bookings { get; set; }
-    }   
+    }
 }
