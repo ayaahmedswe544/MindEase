@@ -2,8 +2,10 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.SignalR;
+    using MindEase.DTOs.ChatMessage;
     using MindEase.IService;
     using MindEase.Models;
+    using MindEase.Models.Response;
     using System.Security.Claims;
 
     [Authorize]
@@ -49,11 +51,12 @@
             var response = await _chatService.GetOrCreateChat(bookingId);
 
             if (!response.Success)
-                throw new HubException(response.Message);
+              throw new HubException(response.Message);
 
             var chatId = response.Data.Id;
 
             await Groups.AddToGroupAsync(Context.ConnectionId, GetRoom(chatId));
+           
         }
 
         public async Task SendMessage(int bookingId, string content)
@@ -75,21 +78,31 @@
 
             await Clients.Group(GetRoom(chatId))
                 .SendAsync("ReceiveMessage", response.Data);
+
         }
 
-        public async Task MarkAsRead(int chatId)
+        public async Task MarkAsRead(int bookingId)
         {
+            var response = await _chatService.GetOrCreateChat(bookingId);
+
+            if (!response.Success)
+                throw new HubException(response.Message);
+
+            var chatId = response.Data.Id;
             var userId = GetUserId();
 
             await _chatService.MarkMessagesAsRead(chatId, userId);
+            await Clients.Group(GetRoom(chatId))
+                .SendAsync("ChatSeen");
         }
-        public async Task LoadMessages(int chatId)
+        public async Task LoadMessages(int bookingid)
         {
-            var response = await _chatService.GetChatMessages(chatId);
+            var response = await _chatService.GetChatMessages(bookingid);
             if (!response.Success)
                 throw new HubException(response.Message);
 
             await Clients.Caller.SendAsync("LoadMessages", response.Data);
+         
         }
     }
 }

@@ -101,7 +101,7 @@
             if (!unreadResponse.Success)
                 return new GeneralResponse<bool>
                 {
-                    Success = false,
+                    Success = true,
                     Message = unreadResponse.Message
                 };
 

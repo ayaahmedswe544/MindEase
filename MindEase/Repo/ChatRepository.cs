@@ -124,7 +124,7 @@
                             m.SenderId != readerId &&
                             !m.IsRead)
                 .ToListAsync();
-            if (messages == null)
+            if (!messages.Any())
             {
                 return new GeneralResponse<List<ChatMessage>>
                 {
