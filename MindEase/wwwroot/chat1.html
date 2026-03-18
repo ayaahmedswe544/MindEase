@@ -18,13 +18,15 @@
     <div id="seenLabel" style="display:none; color: gray; margin-top:10px;">Seen</div>
 
     <script>
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImRjMjlkZmFlLTNhOWEtNDNiMy05MDk1LWNmZDk3YTkxNzkwNCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Im1hcmlhbUBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoibWFyaWFtIiwiU2VuZGVyVHlwZSI6IjAiLCJqdGkiOiIwOWJlMmVkMi1lNWQ4LTQ2ZTQtYjAzMS1jM2Q0ZTYxYjMwOGEiLCJleHAiOjE3NzM4MDA5MTIsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjcyMDAvIiwiYXVkIjoiTWluZEVhc2VDbGllbnQifQ.6aYhMu3K-54xs9FZVXSfkgTYn0tYB-Eu_YYJoWaIycI";
+        const token = "";
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("https://localhost:7200/hubs/chat", { accessTokenFactory: () => token })
             .build();
 
         let currentBookingId = null;
+
+
         let lastMessageWasMine = false;
 
         function renderMessage(msg) {

@@ -19,13 +19,15 @@
     <div id="seenLabel" style="display:none; color: gray; margin-top:10px;">Seen</div>
 
     <script>
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImRjMjlkZmFlLTNhOWEtNDNiMy05MDk1LWNmZDk3YTkxNzkwNCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Im1hcmlhbUBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoibWFyaWFtIiwiU2VuZGVyVHlwZSI6IjAiLCJqdGkiOiIwOWJlMmVkMi1lNWQ4LTQ2ZTQtYjAzMS1jM2Q0ZTYxYjMwOGEiLCJleHAiOjE3NzM4MDA5MTIsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjcyMDAvIiwiYXVkIjoiTWluZEVhc2VDbGllbnQifQ.6aYhMu3K-54xs9FZVXSfkgTYn0tYB-Eu_YYJoWaIycI";
+        const token = "";
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("https://localhost:7200/hubs/chat", { accessTokenFactory: () => token })
             .build();
 
         let currentBookingId = null;
+
+    
         let lastMessageWasMine = false;
 
         function renderMessage(msg) {
@@ -43,45 +45,31 @@
 
             document.getElementById("messages").appendChild(li);
             li.scrollIntoView({ behavior: "smooth" });
-
-            // If the message is from the other user, mark as read
             if (!lastMessageWasMine) {
                 if (currentBookingId) {
                     connection.invoke("MarkAsRead", currentBookingId).catch(console.error);
                 }
             }
         }
-
-        // Receive messages
         connection.on("ReceiveMessage", (msg) => {
             const senderType = msg.messageSenderType ?? msg.MessageSenderType;
             renderMessage(msg);
-
-            // Reset flag only if the message is from the other user
             if (senderType !== (lastMessageWasMine ? 0 : 1)) {
                 lastMessageWasMine = false;
             }
         });
-
-        // Load messages
         connection.on("LoadMessages", (messages) => {
             const ul = document.getElementById("messages");
             ul.innerHTML = "";
             messages.forEach(msg => renderMessage(msg));
         });
-
-        // When the server notifies that your messages were seen
         connection.on("ChatSeen", () => {
             if (lastMessageWasMine) {
                 const seenLabel = document.getElementById("seenLabel");
                 seenLabel.style.display = "block";
             }
         });
-
-        // Start connection
         connection.start().then(() => console.log("✅ Connected")).catch(console.error);
-
-        // Join chat
         function join() {
             const bookingId = parseInt(document.getElementById("bookingId").value);
             if (!bookingId) return alert("Enter a valid booking ID.");
@@ -92,12 +80,9 @@
             connection.invoke("JoinChat", bookingId)
                 .then(() => {
                     connection.invoke("LoadMessages", bookingId);
-                    // Mark messages as read when joining
                     connection.invoke("MarkAsRead", bookingId).catch(console.error);
                 }).catch(console.error);
         }
-
-        // Send message
         function send() {
             const bookingId = parseInt(document.getElementById("bookingId").value);
             const message = document.getElementById("message").value;
@@ -111,4 +96,5 @@
         }
     </script>
 </body>
+
 </html>
