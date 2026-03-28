@@ -85,6 +85,9 @@ namespace MindEase
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IDoctorScheduleRepo, DoctorScheduleRepo>();
             builder.Services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
+            builder.Services.AddScoped<IDoctorSessionSlotRepo, DoctorSessionSlotRepo>(); 
+            builder.Services.AddScoped<IBookingRepo, BookingRepo>(); 
+            builder.Services.AddScoped<IBookingService, BookingService>(); 
 
             #endregion
             #region Swagger Setting

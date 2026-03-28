@@ -5,15 +5,19 @@ using MindEase.IRepo;
 using MindEase.IService;
 using MindEase.Models;
 using MindEase.Models.Response;
+using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MindEase.Service
 {
     public class DoctorScheduleService : IDoctorScheduleService
     {
         private readonly IDoctorScheduleRepo _repo;
-        public DoctorScheduleService(IDoctorScheduleRepo repo)
+        private readonly IDoctorSessionSlotRepo _doctorSessionSlotRepo;
+        public DoctorScheduleService(IDoctorScheduleRepo repo, IDoctorSessionSlotRepo doctorSessionSlotRepo)
         {
             _repo = repo;
+            _doctorSessionSlotRepo = doctorSessionSlotRepo;
         }
         public async Task<GeneralResponse<DoctorScheduleDto>> CreateDoctorScheduleAsync(CreateDoctorScheduleDto doctorScheduleSchdeduleDto, string doctorId)
         {
@@ -39,7 +43,7 @@ namespace MindEase.Service
                 IsActive = true
             };
             var response = await _repo.CreateAsync(doctorSchedule);
-
+            await BuildSlotsForDay(response.Data, false);
             if (!response.Success)
                 return new GeneralResponse<DoctorScheduleDto>
                 {
@@ -48,7 +52,7 @@ namespace MindEase.Service
                     Errors = response.Errors
                 };
 
-            
+
 
             var dtoResponse = new DoctorScheduleDto
             {
@@ -67,7 +71,7 @@ namespace MindEase.Service
                 Data = dtoResponse,
                 Message = response.Message
             };
-             
+
         }
 
 
@@ -87,6 +91,7 @@ namespace MindEase.Service
 
 
             var response = await _repo.UpdateAsync(doctorWeeklySchedule);
+            await BuildSlotsForDay(response.Data, true);
 
             if (!response.Success)
                 return new GeneralResponse<DoctorScheduleDto>
@@ -149,6 +154,167 @@ namespace MindEase.Service
                 Message = response.Message
             };
         }
+
+        private async Task<GeneralResponse<List<DoctorSessionSlot>>> BuildSlotsForDay(DoctorWeeklySchedule doctorWeeklySchedule, bool isUpdate)
+        {
+            try
+            {
+                int examinationPeriodMinutes = 60;
+                var doctorSlots = new List<DoctorSessionSlot>();
+                var slots = new List<TimeSpan>();
+
+                if (examinationPeriodMinutes <= 0)
+                {
+                    return new GeneralResponse<List<DoctorSessionSlot>>
+                    {
+                        Success = false,
+                        Message = "Failed to Create Day Slots For Doctor.",
+                    };
+                }
+
+                var period = TimeSpan.FromMinutes(examinationPeriodMinutes);
+                var dayStart = doctorWeeklySchedule.StartTime;  // بداية الدوام (TimeSpan)
+                var dayEnd = doctorWeeklySchedule.EndTime;      // نهاية الدوام (TimeSpan)
+
+                // إذا TimeTo أقل من TimeFrom (خطأ إعداد)
+                if (dayEnd <= dayStart)
+                {
+                    return new GeneralResponse<List<DoctorSessionSlot>>
+                    {
+                        Success = false,
+                        Message = "Failed to Create Day Slots For Doctor.",
+                    };
+                }
+
+                var slotStart = dayStart;
+
+                while (slotStart + period <= dayEnd)
+                {
+                    doctorSlots.Add(new DoctorSessionSlot
+                    {
+                        DoctorWeeklyScheduleId = doctorWeeklySchedule.Id,
+                        StartTime = slotStart,
+                        EndTime = slotStart + period,
+                        IsBooked = false,
+                        DoctorWeeklySchedule = null,
+                        Booking = null
+                    });
+                    slotStart = slotStart + period;
+                }
+
+                var doctorSessionSlots = await _doctorSessionSlotRepo.ManageSlotsAsync(doctorSlots, isUpdate);
+
+                return new GeneralResponse<List<DoctorSessionSlot>>
+                {
+                    Success = true,
+                    Message = "Slots Created For Doctor Successfully.",
+                };
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+
+        public async Task<GeneralResponse<List<DoctorSessionSlot>>> TriggerDoctorSlotsStatus(string DoctorId)
+        {
+            try
+            {
+                int examinationPeriodMinutes = 60;
+                var doctorSlots = new List<DoctorSessionSlot>();
+                var slots = new List<TimeSpan>();
+
+                if (examinationPeriodMinutes <= 0)
+                {
+                    return new GeneralResponse<List<DoctorSessionSlot>>
+                    {
+                        Success = false,
+                        Message = "Failed to Create Day Slots For Doctor.",
+                    };
+                }
+
+                List<DoctorWeeklySchedule> doctorWeeklySchedules = new List<DoctorWeeklySchedule>();
+                var result = await _repo.GetByDoctorIdAsync(DoctorId);
+
+                doctorWeeklySchedules = result.Data;
+                var period = TimeSpan.FromMinutes(examinationPeriodMinutes);
+
+                TimeSpan dayStart = new TimeSpan { };  // بداية الدوام (TimeSpan)
+                TimeSpan dayEnd = new TimeSpan { };      // نهاية الدوام (TimeSpan)
+
+
+                if (doctorWeeklySchedules.Count > 0)
+                {
+
+                    foreach (var item in doctorWeeklySchedules)
+                    {
+                        dayStart = item.StartTime;
+                        dayEnd = item.EndTime;
+
+
+                        // إذا TimeTo أقل من TimeFrom (خطأ إعداد)
+                        if (dayEnd <= dayStart)
+                        {
+                            return new GeneralResponse<List<DoctorSessionSlot>>
+                            {
+                                Success = false,
+                                Message = "Failed to Create Day Slots For Doctor.",
+                            };
+                        }
+                        var slotStart = dayStart;
+
+                        while (slotStart + period <= dayEnd)
+                        {
+                            doctorSlots.Add(new DoctorSessionSlot
+                            {
+                                DoctorWeeklyScheduleId = item.Id,
+                                StartTime = slotStart,
+                                EndTime = slotStart + period,
+                                IsBooked = false,
+                                DoctorWeeklySchedule = null,
+                                Booking = null
+                            });
+                            slotStart = slotStart + period;
+                        }
+
+                        var doctorSessionSlots = await _doctorSessionSlotRepo.TriggerUpdateSlotsForDoctor(doctorSlots);
+
+                        return new GeneralResponse<List<DoctorSessionSlot>>
+                        {
+                            Success = true,
+                            Message = "Slots Created For Doctor Successfully.",
+                        };
+
+                    }
+                }
+                else
+                {
+                    return new GeneralResponse<List<DoctorSessionSlot>>
+                    {
+                        Success = false,
+                        Message = "Failed to Create Day Slots For Doctor.",
+                    };
+                }
+
+                return new GeneralResponse<List<DoctorSessionSlot>>
+                {
+                    Success = false,
+                    Message = "Failed to Create Day Slots For Doctor.",
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
 
     }
 }

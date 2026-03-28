@@ -11,10 +11,12 @@ namespace MindEase.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IDoctorScheduleService _doctorScheduleService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IDoctorScheduleService doctorScheduleService)
         {
             _authService = authService;
+            _doctorScheduleService = doctorScheduleService;
         }
 
         [HttpPost("register-user")]
@@ -42,6 +44,10 @@ namespace MindEase.Controllers
         public async Task<ActionResult<GeneralResponse<AuthResponse>>> LoginDoctor(LoginDto dto)
         {
             var result = await _authService.LoginDoctorAsync(dto);
+            if (result.Success)
+            {
+                await _doctorScheduleService.TriggerDoctorSlotsStatus(result.Data.DoctorId);
+            }
             return StatusCode(result.Success ? 200 : 400, result);
         }
     }
