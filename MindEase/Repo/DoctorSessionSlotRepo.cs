@@ -78,66 +78,37 @@ namespace MindEase.Repo
         {
             try
             {
-                var currentDate = DateTime.Now;
-                var itemDeleted = false;
-
-                foreach (var item in doctorSessionSlots)
+                if (doctorSessionSlots == null || !doctorSessionSlots.Any())
                 {
-                    var existingDoctorSessionSlotForDelete = await _context.DoctorSessionSlots.FirstOrDefaultAsync(x => x.DoctorWeeklyScheduleId == item.DoctorWeeklyScheduleId &&
-                    x.IsBooked == true &&
-                    x.CreationTime < currentDate.AddDays(-7) &&
-                    (x.StartTime == item.StartTime || x.EndTime == item.EndTime));
-                    if (existingDoctorSessionSlotForDelete != null)
+                    return new GeneralResponse<List<DoctorSessionSlot>>
                     {
-                        _context.DoctorSessionSlots.RemoveRange(existingDoctorSessionSlotForDelete);
-                        itemDeleted = true;
-                    }
-
-
-                    var existAvailableSlot = await _context.DoctorSessionSlots.FirstOrDefaultAsync(x => x.DoctorWeeklyScheduleId == item.DoctorWeeklyScheduleId && x.IsBooked == false &&
-                    (x.StartTime == item.StartTime || x.EndTime == item.EndTime));
-
-                    if (existAvailableSlot == null)
-                    {
-
-                        var existingDoctorWeeklySchedule = await _context.DoctorWeeklySchedules.FirstOrDefaultAsync(d => d.Id == item.DoctorWeeklyScheduleId);
-                        if (existingDoctorWeeklySchedule == null)
-                        {
-                            return new GeneralResponse<List<DoctorSessionSlot>>
-                            {
-                                Success = false,
-                                Message = "Doctor Weekly Schedule not found"
-                            };
-                        }
-
-
-                        _context.DoctorSessionSlots.Add(item);
-                    }
+                        Success = false,
+                        Message = "No slots provided."
+                    };
                 }
 
+                // 🔹 Add مباشرة بدون أي checks
+                await _context.DoctorSessionSlots.AddRangeAsync(doctorSessionSlots);
                 await _context.SaveChangesAsync();
+
                 return new GeneralResponse<List<DoctorSessionSlot>>
                 {
                     Success = true,
-                    Message = "Slots Created For Slot Successfully.",
+                    Message = "Slots added successfully."
                 };
-
             }
             catch (Exception ex)
             {
                 return new GeneralResponse<List<DoctorSessionSlot>>
                 {
                     Success = false,
-                    Message = "Failed to Create Slot For Doctor.",
+                    Message = "Failed to add slots.",
                     Errors = new Dictionary<string, string[]>
-                    {
-                        { "Server", new[] { ex.Message } }
-                    }
-                };
-
+            {
+                { "Server", new[] { ex.Message } }
             }
-
-
+                };
+            }
         }
 
 
@@ -181,42 +152,79 @@ namespace MindEase.Repo
         }
 
 
-        //public async Task<GeneralResponse<List<DoctorSessionSlot>>> GetSlotByDoctorIdAsync(string doctorId)
-        //{
-        //    try
-        //    {
-        //        var slots = await _context.DoctorSessionSlots.Where(x => x.DoctorWeeklySchedule.DoctorId == doctorId).ToListAsync();
+        public async Task<GeneralResponse<List<DoctorSessionSlot>>> GetSlotByDoctorIdAsync(string doctorId)
+        {
+            try
+            {
+                var slots = await _context.DoctorSessionSlots.Where(x => x.DoctorWeeklySchedule.DoctorId == doctorId).ToListAsync();
 
-        //        if (slots == null)
-        //        {
-        //            return new GeneralResponse<List<DoctorSessionSlot>>
-        //            {
-        //                Success = false,
-        //                Message = "Journal not found."
-        //            };
-        //        }
+                if (slots == null)
+                {
+                    return new GeneralResponse<List<DoctorSessionSlot>>
+                    {
+                        Success = false,
+                        Message = "Journal not found."
+                    };
+                }
 
-        //        return new GeneralResponse<List<DoctorSessionSlot>>
-        //        {
-        //            Success = true,
-        //            Data = slots
-        //        };
+                return new GeneralResponse<List<DoctorSessionSlot>>
+                {
+                    Success = true,
+                    Data = slots
+                };
 
-        //    }
-        //    catch (Exception ex)
-        //    {
+            }
+            catch (Exception ex)
+            {
 
-        //        return new GeneralResponse<List<DoctorSessionSlot>>
-        //        {
-        //            Success = false,
-        //            Message = "Failed to retrieve slot.",
-        //            Errors = new Dictionary<string, string[]>
-        //            {
-        //                { "Server", new[] { ex.Message } }
-        //            }
-        //        };
-        //    }
-        //}
+                return new GeneralResponse<List<DoctorSessionSlot>>
+                {
+                    Success = false,
+                    Message = "Failed to retrieve slot.",
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "Server", new[] { ex.Message } }
+                    }
+                };
+            }
+        }
+        public async Task<GeneralResponse<DoctorSessionSlot>> DeleteSlotsByDoctorId(string doctorId)
+        {
+            try
+            {
+                var slots = await _context.DoctorSessionSlots.Where(x => x.DoctorWeeklySchedule.DoctorId == doctorId).ToListAsync();
+                if (!slots.Any())
+                {
+                    return new GeneralResponse<DoctorSessionSlot>
+                    {
+                        Success = false,
+                        Message = "No slots found for the specified doctor."
+                    };
+                }
+                else
+                {
+                    _context.DoctorSessionSlots.RemoveRange(slots);
+                    await _context.SaveChangesAsync();
+                    return new GeneralResponse<DoctorSessionSlot>
+                    {
+                        Success = true,
+                        Message = "Slots deleted successfully."
+                    };
 
+                }
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse<DoctorSessionSlot>
+                {
+                    Success = false,
+                    Message = "Failed to delete slots for the specified doctor.",
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "Server", new[] { ex.Message } }
+                    }
+                };
+            }
+        }
     }
 }

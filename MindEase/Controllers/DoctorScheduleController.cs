@@ -28,7 +28,9 @@ namespace MindEase.Controllers
             return DoctorId;
         }
          
-        [HttpPost]
+        [HttpPost("Add")]
+
+
         public async Task<ActionResult<GeneralResponse<DoctorScheduleDto>>> CreateSchedule([FromForm] CreateDoctorScheduleDto doctorSchdeduleDto)
         {
             string DoctorId = GetDoctorId();

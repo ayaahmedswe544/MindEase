@@ -32,7 +32,9 @@ namespace MindEase.Repo
                         Message = "Doctor not found"
                     };
                 }
-                bool ExisDayOfWeek = _context.DoctorWeeklySchedules.Any(u => u.DayOfWeek == doctorSchedule.DayOfWeek && u.Id == doctorSchedule.Id);
+                bool ExisDayOfWeek = _context.DoctorWeeklySchedules
+    .Any(u => u.DayOfWeek == doctorSchedule.DayOfWeek
+           && u.DoctorId == doctorSchedule.DoctorId);
                 if (ExisDayOfWeek)
                 {
                     return new GeneralResponse<DoctorWeeklySchedule>

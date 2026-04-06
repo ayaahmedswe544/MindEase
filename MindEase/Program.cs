@@ -32,14 +32,7 @@ namespace MindEase
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            //builder.Services.AddIdentity<User, IdentityRole>()
-            //       .AddEntityFrameworkStores<AppDbContext>()
-            //       .AddDefaultTokenProviders();
 
-            //builder.Services.AddIdentityCore<Doctor>()
-            //    .AddRoles<IdentityRole>()
-            //    .AddEntityFrameworkStores<AppDbContext>()
-            //    .AddDefaultTokenProviders();
             builder.Services.AddIdentity<GeneralUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();

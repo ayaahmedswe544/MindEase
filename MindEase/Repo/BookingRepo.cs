@@ -32,6 +32,7 @@ namespace MindEase.Repo
                     };
 
                 }
+                slot.IsBooked = true;
 
                 _context.Bookings.Add(booking);
                 await _context.SaveChangesAsync();
