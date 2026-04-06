@@ -140,6 +140,47 @@ namespace MindEase.Repo
 
         }
 
+
+        public async Task<GeneralResponse<DoctorSessionSlot>> SetSlotAsBooked(int slotId)
+        {
+            try
+            {
+                DoctorSessionSlot existedSlot = await _context.DoctorSessionSlots.FindAsync(slotId);
+
+                if (existedSlot == null)
+                {
+                    return new GeneralResponse<DoctorSessionSlot>
+                    {
+                        Success = false,
+                        Message = "Slot not found."
+                    };
+                }
+                existedSlot.IsBooked = true;
+                await _context.SaveChangesAsync();
+
+                return new GeneralResponse<DoctorSessionSlot>
+                {
+                    Success = true,
+                    Data = existedSlot,
+                    Message = "Slot has been booked successfully."
+                };
+            }
+            catch (Exception ex)
+            {
+
+                return new GeneralResponse<DoctorSessionSlot>
+                {
+                    Success = false,
+                    Message = "Failed to book Slot .",
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "Server", new[] { ex.Message } }
+                    }
+                };
+            }
+        }
+
+
         //public async Task<GeneralResponse<List<DoctorSessionSlot>>> GetSlotByDoctorIdAsync(string doctorId)
         //{
         //    try

@@ -8,6 +8,7 @@ namespace MindEase.IRepo
     {
         Task<GeneralResponse<List<DoctorSessionSlot>>> ManageSlotsAsync(List<DoctorSessionSlot> doctorSessionSlots, bool isUpdate);
         Task<GeneralResponse<List<DoctorSessionSlot>>> TriggerUpdateSlotsForDoctor(List<DoctorSessionSlot> doctorSessionSlots);
+        Task<GeneralResponse<DoctorSessionSlot>> SetSlotAsBooked(int slotId);
         //Task<GeneralResponse<DoctorSessionSlot>> GetSlotByIdAsync(int id);
     }
 }
