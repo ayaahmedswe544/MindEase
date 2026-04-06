@@ -178,8 +178,13 @@ namespace MindEase.Repo
                     return response;
                     }
 
+<<<<<<< HEAD
                     var token = _jwtService.GenerateToken(doctor.Id.ToString(), doctor.Email, "Doctor", doctor.FullName,1);
                     response.Data = new AuthResponse { Token = token };
+=======
+                    var token = _jwtService.GenerateToken(doctor.Id.ToString(), doctor.Email, "Doctor");
+                    response.Data = new AuthResponse { Token = token , DoctorId = doctor.Id };
+>>>>>>> AboEls3ood
                     response.Message = "Login successful";
                 }
                 catch (Exception ex)

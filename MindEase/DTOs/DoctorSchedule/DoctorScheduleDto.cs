@@ -1,10 +1,12 @@
-﻿namespace MindEase.Models
+﻿using MindEase.DTOs.Doctor;
+
+namespace MindEase.DTOs.DoctorSchedule
 {
-    public class DoctorWeeklySchedule
+    public class DoctorScheduleDto
     {
         public int Id { get; set; }
         public string DoctorId { get; set; }
-        public Doctor Doctor { get; set; }
+        public DoctorDto Doctor { get; set; }
 
         public DayOfWeek DayOfWeek { get; set; }
 
@@ -12,10 +14,5 @@
         public TimeSpan EndTime { get; set; }
 
         public bool IsActive { get; set; }
-<<<<<<< HEAD
-=======
-        public List<DoctorSessionSlot> SessionSlots { get; set; }
->>>>>>> AboEls3ood
-
     }
 }

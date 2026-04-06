@@ -34,14 +34,7 @@ namespace MindEase
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            //builder.Services.AddIdentity<User, IdentityRole>()
-            //       .AddEntityFrameworkStores<AppDbContext>()
-            //       .AddDefaultTokenProviders();
 
-            //builder.Services.AddIdentityCore<Doctor>()
-            //    .AddRoles<IdentityRole>()
-            //    .AddEntityFrameworkStores<AppDbContext>()
-            //    .AddDefaultTokenProviders();
             builder.Services.AddIdentity<GeneralUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
@@ -108,6 +101,7 @@ namespace MindEase
             builder.Services.AddScoped<IJournalService, JournalService>();
             builder.Services.AddScoped<IClientRepo, ClientRepo>();
             builder.Services.AddScoped<IClientService, ClientService>();
+<<<<<<< HEAD
             builder.Services.AddScoped<IMoodEntryRepo, MoodEntryRepo>();
             builder.Services.AddScoped<IMoodEntryService, MoodEntryService>();
             builder.Services.AddScoped<IChatRepository, ChatRepository>();
@@ -124,6 +118,13 @@ namespace MindEase
                 });
             });
 
+=======
+            builder.Services.AddScoped<IDoctorScheduleRepo, DoctorScheduleRepo>();
+            builder.Services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
+            builder.Services.AddScoped<IDoctorSessionSlotRepo, DoctorSessionSlotRepo>(); 
+            builder.Services.AddScoped<IBookingRepo, BookingRepo>(); 
+            builder.Services.AddScoped<IBookingService, BookingService>(); 
+>>>>>>> AboEls3ood
 
             #endregion
             #region Swagger Setting
