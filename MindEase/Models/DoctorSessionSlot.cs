@@ -10,19 +10,10 @@ namespace MindEase.Models
         public int DoctorWeeklyScheduleId { get; set; }
         public DoctorWeeklySchedule DoctorWeeklySchedule { get; set; }
 
-<<<<<<< HEAD
-        public DateTime StartDateTime { get; set; }
-        public DateTime EndDateTime { get; set; }
-
-        public SlotStatus SlotStatus { get; set; }
-        public Booking Booking { get; set; }
-
-=======
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; } 
         public bool IsBooked { get; set; }
         public DateTime CreationTime { get; set; } = DateTime.Now;
         public Booking? Booking { get; set; }
->>>>>>> AboEls3ood
     }
 }

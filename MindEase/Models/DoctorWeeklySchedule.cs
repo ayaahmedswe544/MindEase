@@ -12,10 +12,7 @@
         public TimeSpan EndTime { get; set; }
 
         public bool IsActive { get; set; }
-<<<<<<< HEAD
-=======
         public List<DoctorSessionSlot> SessionSlots { get; set; }
->>>>>>> AboEls3ood
 
     }
 }
