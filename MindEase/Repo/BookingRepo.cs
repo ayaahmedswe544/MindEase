@@ -78,6 +78,20 @@ namespace MindEase.Repo
                 {
                     existedBooking.ConfirmedAt = DateTime.Now;
                     await _doctorSessionSlotRepo.SetSlotAsBooked(existedBooking.DoctorSessionSlotId);
+                   var booking= await _context.Bookings.FirstOrDefaultAsync(x => x.Id == Id);
+                    var userId = booking.UserId;
+                    var doctorId = booking.DoctorId;
+                    var UserDoctorExist = await _context.UserDoctors.FirstOrDefaultAsync(x => x.UserId == userId && x.DoctorId == doctorId);
+                    if (UserDoctorExist == null)
+                    {
+                        _context.UserDoctors.Add(new UserDoctor
+                        {
+                            UserId = userId,
+                            DoctorId = doctorId,
+                            CreatedAt = DateTime.Now
+                        });
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 existedBooking.BookingStatus = status;
                 await _context.SaveChangesAsync();

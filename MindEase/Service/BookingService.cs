@@ -48,6 +48,7 @@ namespace MindEase.Service
 
             var dtoResponse = new BookingDto
             {
+                Id=response.Data.Id,
                 DoctorId = response.Data!.DoctorId,
                 BookingStatus = response.Data.BookingStatus,
                 ConfirmedAt = response.Data.ConfirmedAt,

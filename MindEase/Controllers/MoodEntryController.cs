@@ -32,8 +32,8 @@ namespace MindEase.Controllers
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
 
-        [HttpPost("delete")]
-        public async Task<ActionResult<GeneralResponse<string>>> DeleteMoodEntry([FromBody] int id)
+        [HttpPost("delete/{id}")]
+        public async Task<ActionResult<GeneralResponse<string>>> DeleteMoodEntry( int id)
         {
             var userId = GetUserId();
             var response = await _service.DeleteAsync(id, userId);

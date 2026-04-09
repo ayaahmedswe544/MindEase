@@ -49,7 +49,6 @@ namespace MindEase.Controllers
             return StatusCode(response.Success ? 200 : 404, response);
         }
 
-
     }
 }
 
