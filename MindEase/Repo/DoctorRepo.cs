@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MindEase.DTOs.Doctor;
 using MindEase.IRepo;
 using MindEase.IService;
 using MindEase.Models;
@@ -35,7 +36,8 @@ namespace MindEase.Repo
                         Message = "Doctor not found"
                     };
                 }
-                else {
+                else
+                {
                     return new GeneralResponse<Doctor>
                     {
                         Success = true,
@@ -104,7 +106,8 @@ namespace MindEase.Repo
 
 
                 }
-                else {
+                else
+                {
                     var imageUploadResult = await _imageService.UploadImageAsync(profilePicture, "profile-pictures");
                     existingDoctor.Image = imageUploadResult;
                 }
@@ -158,8 +161,8 @@ namespace MindEase.Repo
                 };
             }
 
-            var patients = _context.UserDoctors.Where(d=>d.DoctorId==ID).Select(d=>d.User).ToList();
-            if(patients==null || patients.Count == 0)
+            var patients = _context.UserDoctors.Where(d => d.DoctorId == ID).Select(d => d.User).ToList();
+            if (patients == null || patients.Count == 0)
             {
                 return new GeneralResponse<List<User>>
                 {
@@ -172,6 +175,35 @@ namespace MindEase.Repo
             {
                 Success = true,
                 Data = patients
+            };
+        }
+
+        public async Task<GeneralResponse<List<Doctor>>> GetAllDoctorsAsync(int pageSize, int pageNumber, string searchTerm)
+        {
+            var doctors = _context.Users.OfType<Doctor>().ToList();
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                doctors = doctors.Where(d => d.FullName.Contains(searchTerm) || d.Specialization.Contains(searchTerm)).ToList();
+
+            }
+            doctors = doctors.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            return new GeneralResponse<List<Doctor>>
+            {
+                Success = true,
+                Data = doctors
+            };
+        }
+        public async Task<GeneralResponse<int>> GetTotalNumberOfDoctorsAsync(int pageSize, int pageNumber, string searchTerm)
+        {
+            var doctors = _context.Users.OfType<Doctor>().ToList();
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                doctors = doctors.Where(d => d.FullName.Contains(searchTerm) || d.Specialization.Contains(searchTerm)).ToList();
+            }
+            return new GeneralResponse<int>
+            {
+                Success = true,
+                Data = doctors.Count
             };
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MindEase.DTOs.Auth;
 using MindEase.IService;
 using MindEase.Models.Response;
+using System.Security.Claims;
 
 namespace MindEase.Controllers
 {
@@ -18,7 +19,10 @@ namespace MindEase.Controllers
             _authService = authService;
             _doctorScheduleService = doctorScheduleService;
         }
-
+        private string GetId() { 
+        string id= User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                    return id;  
+        }
         [HttpPost("register-user")]
         public async Task<ActionResult<GeneralResponse<AuthResponse>>> RegisterUser(RegisterUserDto dto)
         {
@@ -46,7 +50,8 @@ namespace MindEase.Controllers
             var result = await _authService.LoginDoctorAsync(dto);
             if (result.Success)
             {
-                await _doctorScheduleService.TriggerDoctorSlotsStatus(result.Data.DoctorId);
+                string doctorId =GetId();
+                await _doctorScheduleService.TriggerDoctorSlotsStatus(doctorId);
             }
             return StatusCode(result.Success ? 200 : 400, result);
         }

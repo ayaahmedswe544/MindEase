@@ -10,6 +10,8 @@ namespace MindEase.IRepo
 
         Task<GeneralResponse<Doctor>> UpdateProfileAsync(Doctor doctor, IFormFile profilePicture);
         Task<GeneralResponse<List<User>>> GetDoctorUsersAsync(string ID);
+        Task<GeneralResponse<List<Doctor>>> GetAllDoctorsAsync(int pageSize,int pageNumber,string searchTerm);
+        Task<GeneralResponse<int>> GetTotalNumberOfDoctorsAsync(int pageSize, int pageNumber, string searchTerm);
 
     }
 }

@@ -10,7 +10,6 @@ using System.Security.Claims;
 
 namespace MindEase.Controllers
 {
-    [Authorize(Roles = "Doctor")]
     [Route("api/[controller]")]
     [ApiController]
 
@@ -26,6 +25,7 @@ namespace MindEase.Controllers
             string DoctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return DoctorId;
         }
+        [Authorize(Roles = "Doctor")]
 
         [HttpGet("profile")]
         public async Task<ActionResult<GeneralResponse<DoctorDto>>> Profile()
@@ -36,6 +36,7 @@ namespace MindEase.Controllers
 
 
         }
+        [Authorize(Roles = "Doctor")]
         [HttpPost]
         public async Task<ActionResult<GeneralResponse<DoctorDto>>> UpdateProfile([FromForm] updateDoctorDto doctorDto)
         {
@@ -43,11 +44,19 @@ namespace MindEase.Controllers
             var response = await _service.UpdateProfileAsync(doctorDto, DoctorId);
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
+        [Authorize(Roles = "Doctor")]
         [HttpGet("patients")]
         public async Task<ActionResult<GeneralResponse<List<DoctorUsers>>>> GetDoctorUsers()
         {
             string DoctorId = GetDoctorId();
             var response = await _service.GetDoctorUsersAsync(DoctorId);
+            return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
+        }
+        [Authorize(Roles = "Doctor,User")]
+        [HttpGet("all")]
+        public async Task<ActionResult<GeneralResponse<DoctorsPaginationDto>>> GetAllDoctors([FromQuery] int pageSize=10, [FromQuery] int pageNumber=1, [FromQuery] string? searchTerm=null)
+        {
+            var response = await _service.GetAllDoctorsAsync(pageSize, pageNumber, searchTerm);
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
     }

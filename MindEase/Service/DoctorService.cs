@@ -165,5 +165,53 @@ namespace MindEase.Service
                 };
             }
         }
+
+        public async Task<GeneralResponse<List<DoctorsPaginationDto>>> GetAllDoctorsAsync(int pageSize, int pageNumber, string searchTerm)
+        {
+            var result= await _repo.GetAllDoctorsAsync(pageSize, pageNumber, searchTerm);
+            if (result.Success)
+            {
+                List<DoctorDto> doctorDtos = new List<DoctorDto>();
+                var totalCountResponse =await _repo.GetTotalNumberOfDoctorsAsync(pageSize,pageNumber,searchTerm);
+                int totalCount = totalCountResponse.Success ? totalCountResponse.Data : 0;
+                foreach (var doc in result.Data)
+                {
+                    doctorDtos.Add(new DoctorDto
+                    {
+                        Id = doc.Id,
+                        FullName = doc.FullName,
+                        Specialization = doc.Specialization,
+                        ProfilePicture= doc.Image,
+                    });
+                } 
+                var doctorPaginationList = new List<DoctorsPaginationDto>
+                {
+                    new DoctorsPaginationDto
+                    {
+                        Doctors = doctorDtos,
+                        TotalCount = totalCount
+                    }
+                };
+                return new GeneralResponse<List<DoctorsPaginationDto>>
+                {
+                    Success = true,
+                    Message = "Doctors retrieved successfully.",
+                    Data = doctorPaginationList,
+                    Errors = null
+                };
+            }
+            else
+            {
+                return new GeneralResponse<List<DoctorsPaginationDto>>
+                {
+                    Success = false,
+                    Message = "Failed to retrieve doctors.",
+                    Data = null,
+                    Errors = result.Errors
+                };
+            }
+        }
+
+
     }
 }
