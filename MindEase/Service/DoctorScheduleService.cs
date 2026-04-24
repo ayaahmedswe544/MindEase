@@ -1,5 +1,6 @@
 ﻿using Azure;
 using MindEase.DTOs.DoctorSchedule;
+using MindEase.DTOs.DoctorSessionSlot;
 using MindEase.DTOs.Memory;
 using MindEase.IRepo;
 using MindEase.IService;
@@ -237,7 +238,7 @@ namespace MindEase.Service
                         Message = "Invalid examination period."
                     };
                 }
-                var respo= await _doctorSessionSlotRepo.GetSlotByDoctorIdAsync(DoctorId);
+                var respo= await _doctorSessionSlotRepo.GetSlotsByDoctorIdAsync(DoctorId);
                 var existingSlots = respo.Data; 
 
                 if (existingSlots != null )
@@ -274,6 +275,10 @@ namespace MindEase.Service
 
                 var doctorSlots = new List<DoctorSessionSlot>();
                 var period = TimeSpan.FromMinutes(examinationPeriodMinutes);
+
+                var fromDate = DateTime.UtcNow.Date;
+                var toDate = fromDate.AddDays(7);
+
                 foreach (var item in doctorWeeklySchedules)
                 {
                     var dayStart = item.StartTime;
@@ -288,20 +293,31 @@ namespace MindEase.Service
                         };
                     }
 
-                    var slotStart = dayStart;
-
-                    while (slotStart + period <= dayEnd)
+                    // 🔥 loop through actual calendar days
+                    for (var date = fromDate; date <= toDate; date = date.AddDays(1))
                     {
-                        doctorSlots.Add(new DoctorSessionSlot
-                        {
-                            DoctorWeeklyScheduleId = item.Id,
-                            StartTime = slotStart,
-                            EndTime = slotStart + period,
-                            IsBooked = false,
-                            CreationTime = DateTime.UtcNow
-                        });
+                        // ✅ only generate for matching weekday
+                        if (date.DayOfWeek != item.DayOfWeek)
+                            continue;
 
-                        slotStart += period;
+                        var slotStart = dayStart;
+
+                        while (slotStart + period <= dayEnd)
+                        {
+                            doctorSlots.Add(new DoctorSessionSlot
+                            {
+                                DoctorWeeklyScheduleId = item.Id,
+
+                                Date = date, // 🔥 THIS IS THE KEY FIX
+
+                                StartTime = slotStart,
+                                EndTime = slotStart + period,
+                                IsBooked = false,
+                                CreationTime = DateTime.UtcNow
+                            });
+
+                            slotStart += period;
+                        }
                     }
                 }
                 await _doctorSessionSlotRepo.TriggerUpdateSlotsForDoctor(doctorSlots);
@@ -318,5 +334,41 @@ namespace MindEase.Service
             }
         }
 
+        public async Task<GeneralResponse<List<DoctorSessionSlotDto>>> GetSlotByDoctorIdAsync(string DoctorId)
+        {
+            var response=await _doctorSessionSlotRepo.GetSlotsByDoctorIdAsync(DoctorId);
+
+            if (!response.Success)
+            {
+                return new GeneralResponse<List<DoctorSessionSlotDto>>
+                {
+                    Success = false,
+                    Message = "Failed to retrieve slots.",
+                    Errors = response.Errors
+                };
+            }
+            var slots = response.Data;
+            List<DoctorSessionSlotDto> SlotsDto= new List<DoctorSessionSlotDto>();
+            foreach(var slot in slots) {
+                SlotsDto.Add(new DoctorSessionSlotDto
+                {
+                    Id = slot.Id,
+                    DoctorWeeklyScheduleId = slot.DoctorWeeklyScheduleId,
+                    StartTime = slot.StartTime,
+                    EndTime = slot.EndTime,
+                    IsBooked = slot.IsBooked,
+                    Date=slot.Date
+                    
+                });
+            
+            }
+
+            return new GeneralResponse<List<DoctorSessionSlotDto>>
+            {
+                Success = true,
+                Message = "Slots retrieved successfully.",
+                Data = SlotsDto
+            };
+        }
     }
 }

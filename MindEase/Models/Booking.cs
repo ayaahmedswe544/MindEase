@@ -8,7 +8,7 @@ namespace MindEase.Models
         [Key]
         public int Id { get; set; }
         [ForeignKey("DoctorSessionSlot")]
-        public int DoctorSessionSlotId { get; set; }
+        public int? DoctorSessionSlotId { get; set; }
         public DoctorSessionSlot DoctorSessionSlot { get; set; }
 
         [ForeignKey("User")]

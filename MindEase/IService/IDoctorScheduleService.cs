@@ -1,4 +1,5 @@
 ﻿using MindEase.DTOs.DoctorSchedule;
+using MindEase.DTOs.DoctorSessionSlot;
 using MindEase.Models;
 using MindEase.Models.Response;
 
@@ -11,5 +12,7 @@ namespace MindEase.IService
         Task<GeneralResponse<bool>> DeleteAsync(int id);
         Task<GeneralResponse<List<DoctorScheduleDto>>> GetByDoctorIdAsync(string DoctorId);
         Task<GeneralResponse<List<DoctorSessionSlot>>> TriggerDoctorSlotsStatus(string DoctorId);
+        Task<GeneralResponse<List<DoctorSessionSlotDto>>> GetSlotByDoctorIdAsync(string DoctorId);
+
     }
 }

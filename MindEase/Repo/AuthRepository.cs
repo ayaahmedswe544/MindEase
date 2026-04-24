@@ -179,7 +179,7 @@ namespace MindEase.Repo
                     }
 
                     var token = _jwtService.GenerateToken(doctor.Id.ToString(), doctor.Email, "Doctor", doctor.FullName,1);
-                    response.Data = new AuthResponse { Token = token };
+                    response.Data = new AuthResponse { Token = token,DoctorId=doctor.Id };
                     response.Message = "Login successful";
                 }
                 catch (Exception ex)

@@ -86,8 +86,6 @@ namespace MindEase.Repo
                         Message = "No slots provided."
                     };
                 }
-
-                // 🔹 Add مباشرة بدون أي checks
                 await _context.DoctorSessionSlots.AddRangeAsync(doctorSessionSlots);
                 await _context.SaveChangesAsync();
 
@@ -112,7 +110,7 @@ namespace MindEase.Repo
         }
 
 
-        public async Task<GeneralResponse<DoctorSessionSlot>> SetSlotAsBooked(int slotId)
+        public async Task<GeneralResponse<DoctorSessionSlot>> ToggleSlotBookedState(int? slotId=0)
         {
             try
             {
@@ -126,7 +124,7 @@ namespace MindEase.Repo
                         Message = "Slot not found."
                     };
                 }
-                existedSlot.IsBooked = true;
+                existedSlot.IsBooked = !existedSlot.IsBooked;
                 await _context.SaveChangesAsync();
 
                 return new GeneralResponse<DoctorSessionSlot>
@@ -152,18 +150,28 @@ namespace MindEase.Repo
         }
 
 
-        public async Task<GeneralResponse<List<DoctorSessionSlot>>> GetSlotByDoctorIdAsync(string doctorId)
+        public async Task<GeneralResponse<List<DoctorSessionSlot>>> GetSlotsByDoctorIdAsync(string doctorId)
         {
             try
             {
-                var slots = await _context.DoctorSessionSlots.Where(x => x.DoctorWeeklySchedule.DoctorId == doctorId).ToListAsync();
+
+                var fromDate = DateTime.UtcNow.Date;
+                var toDate = fromDate.AddDays(7);
+
+                var slots = await _context.DoctorSessionSlots
+                    .Where(x =>
+                        x.DoctorWeeklySchedule.DoctorId == doctorId &&
+                        x.Date >= fromDate &&
+                        x.Date <= toDate
+                    )
+                    .ToListAsync();
 
                 if (slots == null)
                 {
                     return new GeneralResponse<List<DoctorSessionSlot>>
                     {
                         Success = false,
-                        Message = "Journal not found."
+                        Message = "There are no slots for this doctor"
                     };
                 }
 
@@ -203,8 +211,20 @@ namespace MindEase.Repo
                 }
                 else
                 {
-                    _context.DoctorSessionSlots.RemoveRange(slots);
-                    await _context.SaveChangesAsync();
+                    //_context.DoctorSessionSlots.RemoveRange(slots);
+                    foreach (var slot in slots)
+                    {
+                        if (await _context.Bookings.AnyAsync(b => b.DoctorSessionSlotId == slot.Id))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            _context.DoctorSessionSlots.Remove(slot);
+                            await _context.SaveChangesAsync();
+                        }
+                        
+                    }
                     return new GeneralResponse<DoctorSessionSlot>
                     {
                         Success = true,

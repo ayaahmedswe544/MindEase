@@ -11,7 +11,8 @@ namespace MindEase.Models
         public DoctorWeeklySchedule DoctorWeeklySchedule { get; set; }
 
         public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; } 
+        public TimeSpan EndTime { get; set; }
+        public DateTime Date { get; set; } 
         public bool IsBooked { get; set; }
         public DateTime CreationTime { get; set; } = DateTime.Now;
         public Booking? Booking { get; set; }

@@ -53,7 +53,7 @@ namespace MindEase.Controllers
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
         [Authorize(Roles = "Doctor,User")]
-        [HttpGet("all")]
+        [HttpGet("All")]
         public async Task<ActionResult<GeneralResponse<DoctorsPaginationDto>>> GetAllDoctors([FromQuery] int pageSize=10, [FromQuery] int pageNumber=1, [FromQuery] string? searchTerm=null)
         {
             var response = await _service.GetAllDoctorsAsync(pageSize, pageNumber, searchTerm);

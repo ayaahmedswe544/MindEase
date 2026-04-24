@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace MindEase.Controllers
 {
-    [Authorize]
+  
     [Route("api/[controller]")]
     [ApiController]
 
@@ -24,7 +24,7 @@ namespace MindEase.Controllers
             _service = service;
         }
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-
+        [Authorize(Roles = "User")]
         [HttpPost("create")]
         public async Task<ActionResult<GeneralResponse<BookingDto>>> Create([FromForm] CreateBookingDto dto)
         {
@@ -32,6 +32,9 @@ namespace MindEase.Controllers
             var response = await _service.CreateAsync(dto, userId);
             return StatusCode(response.Success ? 200 : 400, response);
         }
+
+        //Aya make sure the user doesnt change status that only a user can do
+        [Authorize(Roles = "User,Doctor")]
         [HttpPost("change-status")]
         public async Task<ActionResult<GeneralResponse<BookingDto>>> ChangeStatus(int Id, BookingStatus status)
         {
@@ -39,7 +42,7 @@ namespace MindEase.Controllers
             var response = await _service.ChangeStatusAsync(Id, status);
             return StatusCode(response.Success ? 200 : 400, response);
         }
-
+        [Authorize(Roles = "User,Doctor")]
         [HttpPost("getAllBookings")]
         public async Task<ActionResult<GeneralResponse<List<BookingDto>>>> GetAllBookings(bool isDoctor)
         {

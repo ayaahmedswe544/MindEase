@@ -8,10 +8,10 @@ namespace MindEase.DTOs.DoctorSessionSlot
     public class DoctorSessionSlotDto
     {
         public int Id { get; set; }
-        public string DoctorWeeklyScheduleId { get; set; }
-        public DoctorScheduleDto DoctorWeeklySchedule { get; set; }
+        public int DoctorWeeklyScheduleId { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+        public DateTime Date { get; set; }
         public bool IsBooked { get; set; }
     }
 }

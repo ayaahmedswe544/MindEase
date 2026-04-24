@@ -1,4 +1,5 @@
 ﻿using MindEase.DTOs.DoctorSchedule;
+using MindEase.DTOs.DoctorSessionSlot;
 using MindEase.Models;
 using MindEase.Models.Response;
 
@@ -11,5 +12,6 @@ namespace MindEase.IRepo
         Task<GeneralResponse<DoctorWeeklySchedule>> UpdateAsync(DoctorWeeklySchedule doctorSchdule);
         Task<GeneralResponse<bool>> DeleteAsync(int id);
         Task<GeneralResponse<List<DoctorWeeklySchedule>>> GetByDoctorIdAsync(string doctorId);
+
     }
 }

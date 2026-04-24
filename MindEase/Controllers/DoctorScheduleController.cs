@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MindEase.DTOs.DoctorSchedule;
+using MindEase.DTOs.DoctorSessionSlot;
 using MindEase.DTOs.Memory;
 using MindEase.IRepo;
 using MindEase.IService;
@@ -11,7 +12,6 @@ using System.Security.Claims;
 
 namespace MindEase.Controllers
 {
-    [Authorize(Roles = "Doctor")]
     [Route("api/[controller]")]
     [ApiController]
 
@@ -27,7 +27,7 @@ namespace MindEase.Controllers
             string DoctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return DoctorId;
         }
-         
+        [Authorize(Roles = "Doctor")]
         [HttpPost("Add")]
 
 
@@ -37,7 +37,7 @@ namespace MindEase.Controllers
             var response = await _service.CreateDoctorScheduleAsync(doctorSchdeduleDto, DoctorId);
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
-
+        [Authorize(Roles = "Doctor")]
         [HttpPost("update")]
         public async Task<ActionResult<GeneralResponse<DoctorScheduleDto>>> UpdateSchedule([FromForm] UpdateDoctorScheduleDto doctorSchdeduleDto)
         {
@@ -45,20 +45,28 @@ namespace MindEase.Controllers
             var response = await _service.UpdateAsync(doctorSchdeduleDto, DoctorId);
             return StatusCode(response.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest, response);
         }
-
+        [Authorize(Roles = "Doctor")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<GeneralResponse<bool>>> Delete(int id)
         {
             var response = await _service.DeleteAsync(id);
             return StatusCode(response.Success ? 200 : 404, response);
         }
-
+        [Authorize(Roles = "Doctor,User")]
         [HttpGet("doctorSchedules")]
         public async Task<ActionResult<GeneralResponse<List<DoctorScheduleDto>>>> GetAllDoctorSchedules(string DoctorId)
         {
             var response = await _service.GetByDoctorIdAsync(DoctorId);
             return StatusCode(response.Success ? 200 : 404, response);
         }
+        [Authorize(Roles = "Doctor,User")]
+        [HttpGet("slots")]
+        public async Task<ActionResult<GeneralResponse<List<DoctorSessionSlotDto>>>> GetDoctorSlots(string DoctorId)
+        {
+            var response = await _service.GetSlotByDoctorIdAsync(DoctorId);
+            return StatusCode(response.Success ? 200 : 404, response);
+        }
+
 
     }
 }

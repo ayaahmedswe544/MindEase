@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MindEase.DTOs.DoctorSessionSlot;
 using MindEase.IRepo;
 using MindEase.IService;
 using MindEase.Models;
@@ -13,6 +14,7 @@ namespace MindEase.Repo
     {
         private readonly AppDbContext _context;
         private readonly UserManager<GeneralUser> _userManager;
+        private readonly IDoctorSessionSlotRepo _sessionSlotRepo;
 
         public DoctorScheduleRepo(AppDbContext context, UserManager<GeneralUser> userManager)
         {
@@ -214,6 +216,7 @@ namespace MindEase.Repo
                 };
             }
         }
-         
+
+
     }
 }

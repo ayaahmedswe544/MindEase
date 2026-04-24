@@ -31,8 +31,8 @@ namespace MindEase.Models
             builder.Entity<MoodEntry>().HasIndex(m => new { m.UserId, m.Date }).IsUnique();
 
             builder.Entity<DoctorSessionSlot>()
-        .HasIndex(s => new { s.DoctorWeeklyScheduleId, s.StartTime })
-        .IsUnique();
+        .HasIndex(s => new { s.DoctorWeeklyScheduleId, s.StartTime });
+        
 
             //builder.Entity<DoctorSessionSlot>()
             //    .Property(s => s.IsBooked)
@@ -50,7 +50,7 @@ namespace MindEase.Models
         .HasOne(b => b.DoctorSessionSlot)
         .WithOne(s => s.Booking)
         .HasForeignKey<Booking>(b => b.DoctorSessionSlotId)
-        .OnDelete(DeleteBehavior.Restrict); 
+        .OnDelete(DeleteBehavior.NoAction); 
 
             
             builder.Entity<Booking>()
