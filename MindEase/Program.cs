@@ -113,6 +113,13 @@ namespace MindEase
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<ILibraryRepo, LibraryRepo>();
             builder.Services.AddScoped<ILibraryService, LibraryService>();
+            builder.Services.AddScoped<IChatBotRepository, ChatBotRepository>();
+            builder.Services.AddScoped<IChatBotService, ChatBotService>();
+            builder.Services.AddHttpClient<IChatBotService, ChatBotService>(client =>
+            {
+                client.BaseAddress = new Uri("http://127.0.0.1:8000");
+            });
+
             builder.Services.AddSignalR();
             builder.Services.AddCors(options =>
             {

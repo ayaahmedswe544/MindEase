@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace MindEase.Models
 {
@@ -21,7 +22,7 @@ namespace MindEase.Models
         public DbSet<DoctorWeeklySchedule> DoctorWeeklySchedules { get; set; }
         public DbSet<MoodEntry> MoodEntries { get; set; }
         public DbSet<LibraryItem> LibraryItems { get; set; }
-
+        public DbSet<ChatMessageBot> ChatMessageBot { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -105,6 +106,10 @@ namespace MindEase.Models
                  .WithMany(c => c.Messages)
                  .HasForeignKey(m => m.ChatId)
                  .OnDelete(DeleteBehavior.Cascade);
-         }
+
+            builder.Entity<ChatMessageBot>()
+    .HasIndex(m => m.UserId);
+
+        }
     }
 }
