@@ -20,6 +20,7 @@ namespace MindEase.Models
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<DoctorWeeklySchedule> DoctorWeeklySchedules { get; set; }
         public DbSet<MoodEntry> MoodEntries { get; set; }
+        public DbSet<LibraryItem> LibraryItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

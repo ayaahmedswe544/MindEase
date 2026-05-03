@@ -111,6 +111,8 @@ namespace MindEase
             builder.Services.AddScoped<IDoctorSessionSlotRepo, DoctorSessionSlotRepo>();
             builder.Services.AddScoped<IBookingRepo, BookingRepo>();
             builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<ILibraryRepo, LibraryRepo>();
+            builder.Services.AddScoped<ILibraryService, LibraryService>();
             builder.Services.AddSignalR();
             builder.Services.AddCors(options =>
             {
