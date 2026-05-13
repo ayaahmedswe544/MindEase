@@ -8,6 +8,9 @@ namespace MindEase.Models
         public string Specialization { get; set; }
         public string LicenseNumber { get; set; }
         public string Bio { get; set; }
+        public int? SessionTime { get; set; }
+        public int? Price {  get; set; }
+
 
         public List<UserDoctor> UserDoctors { get; set; }
         public List<DoctorWeeklySchedule> WeeklySchedules { get; set; }

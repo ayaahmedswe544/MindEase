@@ -74,42 +74,35 @@ namespace MindEase.Repo
                         Message = "Doctor not found"
                     };
                 }
-                bool ExistEmail = _context.Users.Any(u => u.Email == doctor.Email && u.Id != doctor.Id);
-                if (ExistEmail)
+                if (!string.IsNullOrWhiteSpace(doctor.Email))
                 {
-                    return new GeneralResponse<Doctor>
+                    bool ExistEmail = _context.Users.Any(u => u.Email == doctor.Email && u.Id != doctor.Id);
+                    if (ExistEmail)
                     {
-                        Success = false,
-                        Message = "Email already exists.",
-                        Errors = new Dictionary<string, string[]>
+                        return new GeneralResponse<Doctor>
+                        {
+                            Success = false,
+                            Message = "Email already exists.",
+                            Errors = new Dictionary<string, string[]>
                             {
                                 { "Email", new[] { "Email is already in use" } }
                             }
-                    };
-                }
-                else
-                {
-                    existingDoctor.Email = doctor.Email;
-                }
-                if (profilePicture == null)
-                {
-
-                    return new GeneralResponse<Doctor>
+                        };
+                    }
+                    else
                     {
-                        Success = false,
-                        Message = "Failed to upload profile picture.",
-                        Errors = new Dictionary<string, string[]>
-                            {
-                                { "ImageUpload", new[] { "Error uploading image" } }
-                            }
-                    };
-
-
+                        existingDoctor.Email = doctor.Email;
+                    }
                 }
-                else
+
+
+                if (profilePicture != null)
                 {
+
                     var imageUploadResult = await _imageService.UploadImageAsync(profilePicture, "profile-pictures");
                     existingDoctor.Image = imageUploadResult;
+
+
                 }
 
                 if (!string.IsNullOrEmpty(doctor.FullName))
@@ -123,6 +116,14 @@ namespace MindEase.Repo
                 if (!string.IsNullOrEmpty(doctor.Bio))
                 {
                     existingDoctor.Bio = doctor.Bio;
+                }
+                if (doctor.Price!=null)
+                {
+                    existingDoctor.Price = doctor.Price;
+                }
+                if (doctor.SessionTime != null)
+                {
+                    existingDoctor.SessionTime = doctor.SessionTime;
                 }
 
                 await _context.SaveChangesAsync();

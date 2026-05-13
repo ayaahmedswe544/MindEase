@@ -68,7 +68,7 @@ namespace MindEase.Service
                 return new GeneralResponse<DoctorDto>
                 {
                     Success = false,
-                    Message = "Doctor data cannot be null.",
+                    Message = "No Data is updated.",
                     Data = null,
                     Errors = new Dictionary<string, string[]>
                     {
@@ -82,6 +82,8 @@ namespace MindEase.Service
             doctor.Email = doctorto.Email;
             doctor.Specialization = doctorto.Specialization;
             doctor.Bio = doctorto.Bio;
+            doctor.Price = doctorto.Price;
+            doctor.SessionTime = doctorto.SessionTime;
             var resoponse = await _repo.UpdateProfileAsync(doctor, doctorto.ProfilePicture);
             if (resoponse.Success)
             {
@@ -94,7 +96,9 @@ namespace MindEase.Service
                     Bio = resoponse.Data.Bio,
                     ProfilePicture = resoponse.Data.Image,
                     Gender = resoponse.Data.Gender,
-                    Age = resoponse.Data.Age
+                    Age = resoponse.Data.Age,
+                    Price=resoponse.Data.Price,
+                    SessionTime = resoponse.Data.SessionTime
 
                 };
 
